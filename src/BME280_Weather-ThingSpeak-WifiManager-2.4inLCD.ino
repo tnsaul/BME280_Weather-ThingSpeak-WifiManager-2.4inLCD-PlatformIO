@@ -550,10 +550,10 @@ const char* getNTPTime(int fmt)
     //minutes = static_cast<int>((epoch  % 3600) / 60);
     //seconds = static_cast<int>(epoch % 60);
     if (fmt == 0){
-      sprintf(timeofday,"%02d:%02d:%02d",(epoch  % 86400L) / 3600, (epoch  % 3600) / 60, epoch % 60);
+      sprintf(timeofday,"%02lu:%02lu:%02lu",(epoch  % 86400L) / 3600, (epoch  % 3600) / 60, epoch % 60);
     }
     else{
-      sprintf(timeofday,"%02d:%02d",(epoch  % 86400L) / 3600, (epoch  % 3600) / 60);      
+      sprintf(timeofday,"%02lu:%02lu",(epoch  % 86400L) / 3600, (epoch  % 3600) / 60);      
     }
   }
   return timeofday;
@@ -561,7 +561,7 @@ const char* getNTPTime(int fmt)
 
 /* =============================================== */
 // send an NTP request to the time server at the given address
-unsigned long sendNTPpacket(IPAddress& address)
+void sendNTPpacket(IPAddress& address)
 {
   Serial.println("sending NTP packet...");
   // set all bytes in the buffer to 0

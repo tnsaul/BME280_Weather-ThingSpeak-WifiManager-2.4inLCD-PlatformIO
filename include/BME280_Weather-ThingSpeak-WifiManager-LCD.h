@@ -21,8 +21,8 @@ const char* password = "password";
 #include "ThingSpeak.h"
 
 // ThingSpeak information
-unsigned long myChannelID = 140277;
-const char * myWriteAPIKey = "056I9AXF4S1QN0F5";
+unsigned long myChannelID = 12345;
+const char * myWriteAPIKey = "1234567";
 
 //==== 2.4in TFT LCD Includes ==============================
 //  Setup latest Adafruit_GFX, Adafruit_ILI9341 and XPT2046_Touchscreen Library first:
