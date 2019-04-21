@@ -1,4 +1,9 @@
-// DHT_Weather-ThingSpeak-WifiManager-LCD includes
+// DHT_Weather-ThingSpeak-WifiManager-LCD Defines and Includes
+
+// ==== General Defines ====================================
+#define SERIAL_BAUD 115200
+#define WIFIRESETBUTTON D4
+
 
 //==== WiFi Manager Includes ===============================
 #include <ESP8266WiFi.h>          // https://github.com/esp8266/Arduino
@@ -34,6 +39,7 @@ const char * myWriteAPIKey = "1234567";
 #include <SPI.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_ILI9341.h>
+#include <XPT2046_Touchscreen.h>
 
 #define TFT_CS D0  //for D1 mini or TFT I2C Connector Shield (V1.1.0 or later)
 #define TFT_DC D8  //for D1 mini or TFT I2C Connector Shield (V1.1.0 or later)
@@ -43,6 +49,7 @@ const char * myWriteAPIKey = "1234567";
 // #define TFT_CS 14  //for D32 Pro
 // #define TFT_DC 27  //for D32 Pro
 // #define TFT_RST 33 //for D32 Pro
+// #define TS_CS  12  //for D32 Pro
 
 //==== Additional fonts ====================================
 #include <Fonts/FreeSans9pt7b.h>
@@ -50,4 +57,4 @@ const char * myWriteAPIKey = "1234567";
 #include <Fonts/FreeSans18pt7b.h>
 #include <Fonts/FreeSans24pt7b.h>
 
-// #define TS_CS  12  //for D32 Pro
+
