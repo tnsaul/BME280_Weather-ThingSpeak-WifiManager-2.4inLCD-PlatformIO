@@ -6,6 +6,8 @@
 // v2 Forked from BME280_Weather-ThingSpeak-WifiManager-LCD Project and
 //    replaced 2 Line LCD with LOLIN2.4in TCT LCD and changed to D1 Mini.
 // v3 20190413 Minor updates; changed pressure to hPa.
+// v4 Move to PlatformIO for development
+// v5 Add TouchScreen basics
 //
 //==========================================================
 //  D1 Mini GPIO Pins:
@@ -98,11 +100,6 @@
 
 //====  END Includes =======================================
 
-/* ==== General Defines ==== */
-#define SERIAL_BAUD 115200
-#define WIFIRESETBUTTON D3
-/* ==== END Defines ==== */
-
 /* ==== BME280 Global Variables ==== */
   BME280I2C bme;                // Default : forced mode, standby time = 1000 ms
                                 // Oversampling = pressure ×1, temperature ×1, humidity ×1, filter off,
@@ -144,7 +141,7 @@
 
 /* ==== 2.4in TFT LCD Display Variables ==== */
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_RST);
-  
+XPT2046_Touchscreen ts(TS_CS);  
   
 /* ==== END Global Variables ==== */
 
@@ -158,13 +155,20 @@ Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_RST);
 void setup() {
   Serial.begin(SERIAL_BAUD);
   while(!Serial) {} // Wait
+
+  // Start the TFT Display
   tft.begin();
   displayDiagnostics();
   tft.setFont(&FreeSans9pt7b);
   displayMakeBlack();
   tft.setRotation(3);
   tft.setCursor(0, 19);
+
+  // Start the TouchScreen
+  ts.begin();
+  ts.setRotation(3);
   
+  // Start the BME280 Sensor
   // Use the template begin(int SDA, int SCL);
   // SDA = D2 = GPIO4
   // SCL = D1 = GPIO5
@@ -180,7 +184,7 @@ void setup() {
   pinMode(WIFIRESETBUTTON, INPUT);
   
   // set led pin as output
-  pinMode(BUILTIN_LED, OUTPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
 
   // Print a message to the LCD
   tft.println("Starting!");
@@ -225,10 +229,9 @@ void setup() {
 //==========================================================
 void loop() {
   // LED OFF
-  digitalWrite(BUILTIN_LED, HIGH);
-  //displayMakeBlack();
+  digitalWrite(LED_BUILTIN, HIGH);
   
-  // Measure the temperature etc  every 5 minutes and send to ThingSpeak
+  // Measure the temperature etc every 5 minutes and send to ThingSpeak
   newTime = millis();
 
   if((newTime - oldTime) > THINGSPEAKDELAY){
@@ -257,12 +260,38 @@ void loop() {
   if (!digitalRead(WIFIRESETBUTTON)){
     // OK the reset button is set
     Serial.println("WIFIRESETBUTTON pressed");
-//    tft.clear();
-    tft.setCursor(0, 0);
+    tft.setCursor(0, 19);
     tft.println("WiFi Reset");
     tft.println("See 192.168.4.1");
     configureWIFI(true);
   }
+
+  // Last thing to do is check for someone touching me
+  
+  if (ts.touched()){
+    //TS_Point p = ts.getPoint();
+
+    tft.fillScreen(ILI9341_RED);
+    tft.setTextColor(ILI9341_WHITE);
+    //tft.setCursor(0, 30);
+    //tft.setFont(&FreeSans9pt7b);
+    //tft.setTextSize(1);
+    //tft.print("Pressure= ");
+    //tft.println(p.z);
+    
+    tft.setFont(&FreeSans24pt7b);
+    tft.setCursor(20,150);
+    tft.setTextSize(2);
+
+    tft.println("Ouch !");
+    delay(1000);
+    // OK fun over - rewrite the display.
+    displayLCDBME280Data();
+
+  }
+  
+
+
 }
 /* ==== End Loop ==== */
 
@@ -380,8 +409,8 @@ void configModeCallback (WiFiManager *myWiFiManager) {
 // Simple LED Toggle function used in WiFiManager
 void tick(){
   //toggle state
-  int state = digitalRead(BUILTIN_LED);  // get the current state of GPIO1 pin
-  digitalWrite(BUILTIN_LED, !state);     // set pin to the opposite state
+  int state = digitalRead(LED_BUILTIN);  // get the current state of GPIO1 pin
+  digitalWrite(LED_BUILTIN, !state);     // set pin to the opposite state
 }
 
 
